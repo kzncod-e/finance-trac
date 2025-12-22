@@ -3,21 +3,23 @@ import { useRouter } from "expo-router";
 import { X } from "lucide-react-native";
 import { useState } from "react";
 import { Picker } from "@react-native-picker/picker";
-import { addExpense } from "temporarydb";
+import { addExpense, ExpenseRequest } from "temporarydb";
 
 export default function AddExpenseModal() {
   const router = useRouter();
 
-  const [amount, setAmount] = useState("");
+  const [amount, setAmount] = useState(0);
   const [category, setCategory] = useState("");
   const [note, setNote] = useState("");
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<ExpenseRequest>({
     amount: "",
-    category: "",
+    category: "food",
     note: "",
   });
   const handleAddExpense = () => {
+    if (!form.amount || !form.category) return;
     addExpense(form);
+    setForm({ amount: "", category: "food", note: "" });
   };
   return (
     <View className="flex-1 bg-black/30 justify-end">
@@ -35,10 +37,15 @@ export default function AddExpenseModal() {
 
         {/* Amount */}
         <TextInput
-          value={amount}
-          onChangeText={setAmount}
+          value={form.amount}
+          onChangeText={(text) =>
+            setForm((prev) => ({
+              ...prev,
+              amount: text.replace(/[^0-9]/g, ""),
+            }))
+          }
           placeholder="Amount"
-          keyboardType="numeric"
+          keyboardType="number-pad"
           placeholderTextColor="#9ca3af"
           className="text-3xl font-semibold text-black mb-10"
         />
@@ -48,8 +55,10 @@ export default function AddExpenseModal() {
 
         {/* Category */}
         <Picker
-          selectedValue={category}
-          onValueChange={(itemValue) => setCategory(itemValue)}
+          selectedValue={form.category}
+          onValueChange={(text) =>
+            setForm((prev) => ({ ...prev, category: text }))
+          }
           style={{ marginBottom: 2 }}
         >
           <Picker.Item label="Select Category" value="" />
@@ -60,17 +69,20 @@ export default function AddExpenseModal() {
 
         {/* Note */}
         <TextInput
-          value={note}
-          onChangeText={setNote}
+          value={form.note}
+          onChangeText={(text) => setForm((prev) => ({ ...prev, note: text }))}
           placeholder="Note (optional)"
           placeholderTextColor="#9ca3af"
           className="text-base text-black mb-10"
         />
 
         {/* Save Button */}
-        <Pressable className="bg-black rounded-full py-4">
+        <Pressable
+          onPress={handleAddExpense}
+          className="bg-black rounded-full py-4"
+        >
           <Text className="text-white text-center text-base font-medium">
-            Save
+            Add Expense
           </Text>
         </Pressable>
       </View>

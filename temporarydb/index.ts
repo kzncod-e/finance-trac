@@ -2,8 +2,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export type Expense = {
   id: string;
-  amount: number;
-  category: "Food" | "bike" | "other";
+  amount: string;
+  category: "food" | "Transport" | "other";
   date: Date;
   note?: string;
 };
@@ -13,7 +13,29 @@ const STORAGE_KEY = "EXPENSES";
 // ambil semua expense
 export const getExpenses = async (): Promise<Expense[]> => {
   const data = await AsyncStorage.getItem(STORAGE_KEY);
-  return data ? JSON.parse(data) : [];
+  const parsed = data ? JSON.parse(data) : [];
+  // For testing, add dummy data if empty
+  if (parsed.length === 0) {
+    const dummyExpenses: Expense[] = [
+      {
+        id: "1",
+        amount: "50000",
+        category: "food",
+        date: new Date(),
+        note: "Lunch",
+      },
+      {
+        id: "2",
+        amount: "20000",
+        category: "Transport",
+        date: new Date(),
+        note: "Taxi",
+      },
+    ];
+    await saveExpenses(dummyExpenses);
+    return dummyExpenses;
+  }
+  return parsed;
 };
 
 // simpan semua expense

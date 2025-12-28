@@ -10,10 +10,10 @@ import {
   View,
   ActivityIndicator,
 } from "react-native";
-
+// import GoogleSignInButton from '@/components/social-auth-buttons/google/google-sign-in-button';
 const { width } = Dimensions.get("window");
 
-export default function Auth() {
+export default function auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);

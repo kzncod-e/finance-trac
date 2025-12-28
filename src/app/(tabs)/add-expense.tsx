@@ -8,27 +8,26 @@ import { addExpense, ExpenseRequest } from "temporarydb";
 export default function AddExpenseModal() {
   const router = useRouter();
 
-  const [amount, setAmount] = useState(0);
-  const [category, setCategory] = useState("");
-  const [note, setNote] = useState("");
   const [form, setForm] = useState<ExpenseRequest>({
     amount: "",
     category: "food",
     note: "",
+    type: "expense",
   });
   const handleAddExpense = () => {
     if (!form.amount || !form.category) return;
     addExpense(form);
-    setForm({ amount: "", category: "food", note: "" });
+    setForm({ amount: "", category: "food", note: "", type: "expense" });
+    router.push("Home");
   };
   return (
-    <View className="flex-1 bg-black/30 justify-end">
+    <View className="flex-1 bg-black/30 justify-center">
       {/* MODAL */}
-      <View className="bg-white rounded-t-3xl px-6 pt-6 pb-8">
+      <View className="bg-white rounded-3xl px-6 mx-4 pt-6 pb-8">
         {/* Header */}
         <View className="flex-row items-center justify-between mb-8">
           <Text className="text-[17px] font-semibold text-black">
-            Add Expense
+            Add Transaction
           </Text>
           <Pressable onPress={() => router.back()}>
             <X size={20} color="#000" />
@@ -64,7 +63,18 @@ export default function AddExpenseModal() {
           <Picker.Item label="Select Category" value="" />
           <Picker.Item label="Food" value="food" />
           <Picker.Item label="Transport" value="transport" />
-          <Picker.Item label="Entertainment" value="entertainment" />
+          <Picker.Item label="Entertainment" value="other" />
+        </Picker>
+        <Picker
+          selectedValue={form.category}
+          onValueChange={(text) =>
+            setForm((prev) => ({ ...prev, category: text }))
+          }
+          style={{ marginBottom: 2 }}
+        >
+          <Picker.Item label="Select transaction type" value="" />
+          <Picker.Item label="Expense" value="expense" />
+          <Picker.Item label="Income" value="income" />
         </Picker>
 
         {/* Note */}
@@ -82,7 +92,7 @@ export default function AddExpenseModal() {
           className="bg-black rounded-full py-4"
         >
           <Text className="text-white text-center text-base font-medium">
-            Add Expense
+            Add transaction
           </Text>
         </Pressable>
       </View>

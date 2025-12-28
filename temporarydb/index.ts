@@ -3,38 +3,61 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 export type Expense = {
   id: string;
   amount: string;
-  category: "food" | "Transport" | "other";
+  category: "food" | "transport" | "other";
   date: Date;
+  type: "expense" | "income";
   note?: string;
 };
 export type ExpenseRequest = Omit<Expense, "id" | "date">;
 const STORAGE_KEY = "EXPENSES";
 
 // ambil semua expense
-export const getExpenses = async (): Promise<Expense[]> => {
+type GetExpenseOptions = {
+  month?: string; // format: YYYY-MM
+};
+
+export const getExpenses = async (
+  options?: GetExpenseOptions
+): Promise<Expense[]> => {
   const data = await AsyncStorage.getItem(STORAGE_KEY);
-  const parsed = data ? JSON.parse(data) : [];
-  // For testing, add dummy data if empty
+  let parsed: Expense[] = data ? JSON.parse(data) : [];
+
+  // 🔥 inject dummy data kalau kosong
   if (parsed.length === 0) {
     const dummyExpenses: Expense[] = [
       {
         id: "1",
         amount: "50000",
         category: "food",
-        date: new Date(),
+        date: new Date("2025-01-10"),
         note: "Lunch",
+        type: "expense",
       },
       {
         id: "2",
         amount: "20000",
-        category: "Transport",
-        date: new Date(),
+        category: "transport",
+        date: new Date("2025-02-05"),
         note: "Taxi",
+        type: "expense",
       },
     ];
     await saveExpenses(dummyExpenses);
-    return dummyExpenses;
+    parsed = dummyExpenses;
   }
+  const isSameMonth = (date: Date, month: string) => {
+    const [year, monthIndex] = month.split("-").map(Number);
+    return date.getFullYear() === year && date.getMonth() === monthIndex - 1;
+  };
+console.log();
+
+  // ✅ FILTER BY MONTH (OPTIONAL)
+  if (options?.month) {
+    return parsed.filter((expense) =>
+      isSameMonth(new Date(expense.date), options.month!)
+    );
+  }
+
   return parsed;
 };
 

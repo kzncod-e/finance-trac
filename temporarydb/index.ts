@@ -46,10 +46,11 @@ export const getExpenses = async (
     parsed = dummyExpenses;
   }
   const isSameMonth = (date: Date, month: string) => {
+    //split yang diambil yan gpertama dan di ubah menjadi number
     const [year, monthIndex] = month.split("-").map(Number);
     return date.getFullYear() === year && date.getMonth() === monthIndex - 1;
   };
-console.log();
+  console.log();
 
   // ✅ FILTER BY MONTH (OPTIONAL)
   if (options?.month) {
@@ -57,6 +58,9 @@ console.log();
       isSameMonth(new Date(expense.date), options.month!)
     );
   }
+
+  console.log(options?.month);
+  console.log(parsed);
 
   return parsed;
 };

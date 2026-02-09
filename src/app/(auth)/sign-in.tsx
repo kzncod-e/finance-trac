@@ -1,3 +1,4 @@
+import { useCreateUser } from "@/hooks/queries/use-user";
 import { supabase } from "@/lib/suppabase.web";
 import React, { useState } from "react";
 import {
@@ -10,10 +11,13 @@ import {
   View,
   ActivityIndicator,
 } from "react-native";
+import { showErrorCSS } from "react-native-svg/lib/typescript/deprecated";
 // import GoogleSignInButton from '@/components/social-auth-buttons/google/google-sign-in-button';
 const { width } = Dimensions.get("window");
 
 export default function auth() {
+  const { mutate: createUser } = useCreateUser();
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -43,21 +47,37 @@ export default function auth() {
     if (!validate()) return;
 
     setLoading(true);
-    const {
-      data: { session },
-      error,
-    } = await supabase.auth.signUp({
-      email,
-      password,
-    });
 
-    if (error) {
-      Alert.alert("Register failed", error.message);
-    } else if (!session) {
-      Alert.alert("Check your email", "Please verify your email address");
-    }
+    // const {
+    //   data: { session },
+    //   error,
+    // } = await supabase.auth.signUp({ email, password });
 
-    setLoading(false);
+    // if (error) {
+    //   Alert.alert("Register failed", error.message);
+    //   setLoading(false);
+    //   return;
+    // }
+
+    // kalau supabase sukses → baru hit API backend
+    createUser(
+      { name, email, password },
+      {
+        onSuccess: () => {
+          Alert.alert("Success", "Account created");
+        },
+        onError: (err: any) => {
+          console.log(name, email, password);
+
+          console.log(err);
+
+          Alert.alert("Backend error", err.message || "Failed to save user");
+        },
+        onSettled: () => {
+          setLoading(false);
+        },
+      },
+    );
   }
 
   return (
@@ -80,6 +100,8 @@ export default function auth() {
         email={email}
         password={password}
         setEmail={setEmail}
+        setName={setName}
+        name={name}
         setPassword={setPassword}
         loading={loading}
       />
@@ -95,6 +117,8 @@ function AuthCard({
   onPress,
   email,
   password,
+  name,
+  setName,
   setEmail,
   setPassword,
   loading,
@@ -109,6 +133,13 @@ function AuthCard({
         keyboardType="email-address"
         value={email}
         onChangeText={setEmail}
+        className="bg-gray-100 rounded-xl px-4 py-3 mb-4"
+      />
+      <TextInput
+        placeholder="Name"
+        autoCapitalize="words"
+        value={name}
+        onChangeText={setName}
         className="bg-gray-100 rounded-xl px-4 py-3 mb-4"
       />
 

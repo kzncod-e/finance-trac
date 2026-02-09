@@ -1,6 +1,6 @@
 import { Tabs, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { House, Plus, User } from "lucide-react-native";
+import { House, Plus, CircleDollarSign } from "lucide-react-native";
 import React from "react";
 import { Pressable, View } from "react-native";
 
@@ -54,10 +54,12 @@ export default function RootLayout() {
         />
 
         <Tabs.Screen
-          name="profile"
+          name="Transaction"
           options={{
-            title: "Profile",
-            tabBarIcon: ({ color, size }) => <User color={color} size={size} />,
+            title: "transaction",
+            tabBarIcon: ({ color, size }) => (
+              <CircleDollarSign color={color} size={size} />
+            ),
           }}
         />
       </Tabs>

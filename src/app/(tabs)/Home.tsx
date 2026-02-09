@@ -13,7 +13,7 @@ import MonthSelectorSheet from "@/components/MonthSelectorSheet";
 export default function Index() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const bottomSheetRef = useRef<BottomSheet>(null);
-  const [selectedMonth, setSelectedMonth] = useState("2025-01");
+  const [selectedMonth, setSelectedMonth] = useState("2025-12");
   const monthSheetRef = useRef<BottomSheet>(null);
   const monthLabel = (value: string) => {
     const [year, month] = value.split("-");
@@ -28,7 +28,7 @@ export default function Index() {
   useFocusEffect(
     useCallback(() => {
       loadExpenses();
-    }, [])
+    }, [selectedMonth])
   );
 
   return (
@@ -118,7 +118,7 @@ export default function Index() {
         <BottomSheet
           ref={bottomSheetRef}
           index={-1}
-          snapPoints={["30%", "80%"]}
+          snapPoints={["40%", "80%"]}
           enablePanDownToClose
           backgroundStyle={{ backgroundColor: "#111" }}
           handleIndicatorStyle={{ backgroundColor: "#555" }}

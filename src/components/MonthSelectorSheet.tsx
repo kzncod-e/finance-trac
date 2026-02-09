@@ -41,7 +41,7 @@ export default function MonthSelectorSheet({
     <BottomSheet
       ref={sheetRef}
       index={-1}
-      snapPoints={["40%"]}
+      snapPoints={["30%", "95%"]}
       enablePanDownToClose
       backgroundStyle={{ backgroundColor: "#111" }}
       handleIndicatorStyle={{ backgroundColor: "#555" }}

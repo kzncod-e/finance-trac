@@ -6,31 +6,34 @@ import { useAuthContext } from "./hooks/use-auth-context";
 import { createTheme, ThemeProvider } from "@rneui/themed";
 import AuthProvider from "./providers/auth-provider";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { SplashScreenController } from "@/components/splash-screen-controller";
 const theme = createTheme({ darkColors: { black: "#0F172A" } });
 function RootNavigator() {
   const { isLoggedIn } = useAuthContext();
-  console.log(isLoggedIn, "ini auth");
-
+  // console.log(isLoggedIn, "ini auth");
+  const queryClient = new QueryClient();
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <Stack>
-        <Stack.Protected guard={isLoggedIn}>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="add-expense"
-            options={{
-              presentation: "transparentModal",
-              animation: "slide_from_bottom",
-              headerShown: false,
-            }}
-          />
-        </Stack.Protected>
-        <Stack.Protected guard={!isLoggedIn}>
-          <Stack.Screen name="(auth)" options={{}} />
-        </Stack.Protected>
-        <Stack.Screen name="+not-found" />
-      </Stack>
+      <QueryClientProvider client={queryClient}>
+        <Stack>
+          <Stack.Protected guard={isLoggedIn}>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen
+              name="add-expense"
+              options={{
+                presentation: "transparentModal",
+                animation: "slide_from_bottom",
+                headerShown: false,
+              }}
+            />
+          </Stack.Protected>
+          <Stack.Protected guard={!isLoggedIn}>
+            <Stack.Screen name="(auth)" options={{}} />
+          </Stack.Protected>
+          <Stack.Screen name="+not-found" />
+        </Stack>
+      </QueryClientProvider>
     </GestureHandlerRootView>
   );
 }

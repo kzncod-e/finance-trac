@@ -5,6 +5,8 @@ import { StatusBar } from "expo-status-bar";
 import { useAuthContext } from "./hooks/use-auth-context";
 import { createTheme, ThemeProvider } from "@rneui/themed";
 import AuthProvider from "./providers/auth-provider";
+import { PortalHost } from "@rn-primitives/portal";
+
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { SplashScreenController } from "@/components/splash-screen-controller";
@@ -29,10 +31,11 @@ function RootNavigator() {
             />
           </Stack.Protected>
           <Stack.Protected guard={!isLoggedIn}>
-            <Stack.Screen name="(auth)" options={{}} />
+            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
           </Stack.Protected>
           <Stack.Screen name="+not-found" />
         </Stack>
+        <PortalHost />
       </QueryClientProvider>
     </GestureHandlerRootView>
   );

@@ -9,12 +9,19 @@ import { Bell, Settings, User, ArrowDown, ArrowUp } from "lucide-react-native";
 import ExpenseItem from "@/components/Expense-item";
 import { Expense, getExpenses } from "temporarydb";
 import MonthSelectorSheet from "@/components/MonthSelectorSheet";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 export default function Index() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const bottomSheetRef = useRef<BottomSheet>(null);
   const [selectedMonth, setSelectedMonth] = useState("2025-12");
   const monthSheetRef = useRef<BottomSheet>(null);
+  const [open, setOpen] = useState(false);
+
   const monthLabel = (value: string) => {
     const [year, month] = value.split("-");
     const date = new Date(Number(year), Number(month) - 1);
@@ -28,12 +35,12 @@ export default function Index() {
   useFocusEffect(
     useCallback(() => {
       loadExpenses();
-    }, [selectedMonth])
+    }, [selectedMonth]),
   );
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaView className="flex-1 bg-black">
+      <SafeAreaView className="flex-1 ">
         {/* ================= HOME CONTENT ================= */}
         <View className="px-4 pt-4 gap-6">
           {/* HEADER */}
@@ -57,6 +64,17 @@ export default function Index() {
               <View className="h-14 w-14 rounded-full bg-neutral-900 items-center justify-center">
                 <Settings color="white" />
               </View>
+              <Popover onOpenChange={setOpen}>
+                <PopoverTrigger asChild>
+                  <Pressable onPress={() => setOpen(true)}>
+                    <Text>Open</Text>
+                  </Pressable>
+                </PopoverTrigger>
+
+                <PopoverContent className="w-56">
+                  <Text>Place content for the popover here.</Text>
+                </PopoverContent>
+              </Popover>
             </View>
           </View>
 

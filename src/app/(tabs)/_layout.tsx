@@ -44,7 +44,6 @@ export default function RootLayout() {
           }}
         />
 
-        {/* TAB TENGAH DISEMBUNYIKAN */}
         <Tabs.Screen
           name="add-expense"
           options={{

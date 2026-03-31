@@ -7,7 +7,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Text } from "@/components/ui/text";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/cn";
 import type { TriggerRef } from "@rn-primitives/popover";
 import { LogOutIcon, PlusIcon, SettingsIcon } from "lucide-react-native";
 import * as React from "react";

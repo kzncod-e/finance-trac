@@ -1,9 +1,8 @@
 import { SignInForm } from "@/components/sign-in-form";
-import { useCreateUser } from "@/hooks/queries/use-user";
-import { supabase } from "@/lib/suppabase.web";
+import { useCreateUser, useLogin } from "@/hooks/queries/use-user";
 import React, { useState } from "react";
 import {
-  Alert,
+  Modal,
   Dimensions,
   ScrollView,
   Text,
@@ -12,6 +11,8 @@ import {
   View,
   ActivityIndicator,
 } from "react-native";
+import * as SecureStore from "expo-secure-store";
+
 // import GoogleSignInButton from '@/components/social-auth-buttons/google/google-sign-in-button';
 const { width } = Dimensions.get("window");
 
@@ -21,10 +22,27 @@ export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const { mutate, isPending, isSuccess, isError } = useCreateUser();
+  const {
+    mutate: login,
+    isPending: isPendingLogin,
+    isSuccess: isSuccessLogin,
+    isError: isErrorLogin,
+  } = useLogin();
+
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [alertTitle, setAlertTitle] = useState("");
+  const [alertMessage, setAlertMessage] = useState("");
+
+  const showAlert = (title: string, message: string) => {
+    setAlertTitle(title);
+    setAlertMessage(message);
+    setAlertVisible(true);
+  };
 
   const validate = () => {
     if (!email || !password) {
-      Alert.alert("Error", "Email and password are required");
+      showAlert("Error", "Email and password are required");
       return false;
     }
     return true;
@@ -34,13 +52,26 @@ export default function Auth() {
     if (!validate()) return;
 
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
 
-    if (error) Alert.alert("Login failed", error.message);
-    setLoading(false);
+    login(
+      { email, password },
+      {
+        onSuccess: async (data: any) => {
+          showAlert("Success", "Account created");
+          await SecureStore.setItemAsync("token", data.token);
+        },
+        onError: (err: any) => {
+          console.log(name, email, password);
+
+          console.log(err);
+
+          showAlert("Backend error", err.message || "Failed to save user");
+        },
+        onSettled: () => {
+          setLoading(false);
+        },
+      },
+    );
   }
 
   async function signUp() {
@@ -48,30 +79,18 @@ export default function Auth() {
 
     setLoading(true);
 
-    const {
-      data: { session },
-      error,
-    } = await supabase.auth.signUp({ email, password });
-
-    if (error) {
-      Alert.alert("Register failed", error.message);
-      setLoading(false);
-      return;
-    }
-
-    // kalau supabase sukses → baru hit API backend
     createUser(
       { name, email, password },
       {
         onSuccess: () => {
-          Alert.alert("Success", "Account created");
+          showAlert("Success", "Account created");
         },
         onError: (err: any) => {
           console.log(name, email, password);
 
           console.log(err);
 
-          Alert.alert("Backend error", err.message || "Failed to save user");
+          showAlert("Backend error", err.message || "Failed to save user");
         },
         onSettled: () => {
           setLoading(false);
@@ -111,6 +130,23 @@ export default function Auth() {
           loading={loading}
         />
       </ScrollView>
+
+      <Modal visible={alertVisible} transparent animationType="fade">
+        <View className="flex-1 justify-center items-center bg-black/80 px-4">
+          <View className="w-full max-w-[320px] border-2 border-pink-500/50 bg-zinc-950 p-6 shadow-[0_0_20px_rgba(236,72,153,0.3)]">
+            <Text className="text-xl font-mono text-pink-500 font-bold mb-3 uppercase tracking-widest">{alertTitle}</Text>
+            <View className="h-[1px] w-full bg-pink-500/30 mb-4" />
+            <Text className="text-cyan-400 font-mono mb-8 opacity-80">{alertMessage}</Text>
+            
+            <TouchableOpacity
+              onPress={() => setAlertVisible(false)}
+              className="w-full border border-pink-500 py-3 bg-pink-950/30 shadow-[0_0_10px_rgba(236,72,153,0.2)]"
+            >
+              <Text className="text-pink-500 font-mono text-center font-bold tracking-widest uppercase">ACKNOWLEDGE</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }

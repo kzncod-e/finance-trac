@@ -36,7 +36,7 @@ export function SignInForm({
       <Card className="border-pink-500/60 sm:border-pink-500/60 shadow-[0_0_15px_rgba(236,72,153,0.2)] bg-zinc-900/90 rounded-none border-b-4 border-r-4">
         <CardHeader>
           <CardTitle className="text-center text-xl sm:text-left text-cyan-400 font-bold tracking-widest uppercase">
-            Initialize_Connection
+            {title}
           </CardTitle>
           <CardDescription className="text-center sm:text-left text-pink-500/80 tracking-widest text-xs uppercase">
             Enter credentials to access mainframe
